@@ -13,7 +13,7 @@ export const Route = createFileRoute("/quiz")({
       { name: "description", content: "Generate instant multiple-choice quizzes on any topic." },
     ],
   }),
-  component: Quiz;
+  component: Quiz,
 });
 
 type QuizData = Awaited<ReturnType<typeof generateQuiz>>;
