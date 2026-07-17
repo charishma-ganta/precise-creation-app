@@ -1,10 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { AiMarkdown } from "@/components/AiMarkdown";
 import { generatePlan } from "@/lib/ai.functions";
-import { Calendar, Copy, Loader2, Sparkles } from "lucide-react";
+import { ArrowLeft, Calendar, Copy, Loader2, Sparkles } from "lucide-react";
 import { toast, Toaster } from "sonner";
 
 export const Route = createFileRoute("/planner")({
