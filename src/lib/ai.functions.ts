@@ -117,7 +117,9 @@ Exactly 5 questions, each with exactly 4 options.`,
     if (!result.ok) return { questions: [], error: result.error };
     const raw = result.content;
     const cleaned = raw.replace(/```json\s*|\s*```/g, "").trim();
-    const parsed = QuizSchema.parse(JSON.parse(cleaned));
+    const json = JSON.parse(cleaned);
+    const normalized = Array.isArray(json) ? { questions: json } : json;
+    const parsed = QuizSchema.parse(normalized);
     return { ...parsed, error: "" };
   });
 
