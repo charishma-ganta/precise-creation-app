@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { AiMarkdown } from "@/components/AiMarkdown";
 import { explainTopic } from "@/lib/ai.functions";
-import { Brain, Copy, Eraser, Loader2, Sparkles } from "lucide-react";
+import { ArrowLeft, Brain, Copy, Eraser, Loader2, Sparkles } from "lucide-react";
 import { toast, Toaster } from "sonner";
 
 export const Route = createFileRoute("/explainer")({
