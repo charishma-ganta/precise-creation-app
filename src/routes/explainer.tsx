@@ -33,6 +33,10 @@ function Explainer() {
     setAnswer("");
     try {
       const res = await explain({ data: { topic: topic.trim() } });
+      if (res.error) {
+        toast.error(res.error);
+        return;
+      }
       setAnswer(res.content);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong.");
