@@ -6,24 +6,28 @@ const MODEL = "gemini-2.0-flash";
 async function callGateway(system: string, user: string) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error("Missing GEMINI_API_KEY");
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: system }] },
-        contents: [{ role: "user", parts: [{ text: user }] }],
-      }),
-    },
-  );
-  if (!res.ok) {
-    const body = await res.text();
-    if (res.status === 429) throw new Error("Rate limit reached. Please try again in a moment.");
-    throw new Error(`Gemini request failed (${res.status}): ${body}`);
+  const body = JSON.stringify({
+    systemInstruction: { parts: [{ text: system }] },
+    contents: [{ role: "user", parts: [{ text: user }] }],
+  });
+  const delays = [0, 1500, 4000, 8000];
+  let lastErr = "";
+  for (const wait of delays) {
+    if (wait) await new Promise((r) => setTimeout(r, wait));
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`,
+      { method: "POST", headers: { "Content-Type": "application/json" }, body },
+    );
+    if (res.ok) {
+      const data = await res.json();
+      return data.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("") ?? "";
+    }
+    lastErr = await res.text();
+    if (res.status !== 429 && res.status < 500) {
+      throw new Error(`Gemini request failed (${res.status}): ${lastErr}`);
+    }
   }
-  const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("") ?? "";
+  throw new Error("Gemini is rate-limiting requests on the free tier. Please wait a minute and try again, or upgrade your Gemini API plan.");
 }
 
 export const explainTopic = createServerFn({ method: "POST" })
