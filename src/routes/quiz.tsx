@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { generateQuiz } from "@/lib/ai.functions";
-import { CheckCircle2, Loader2, Sparkles, XCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Loader2, Sparkles, XCircle } from "lucide-react";
 import { toast, Toaster } from "sonner";
 
 export const Route = createFileRoute("/quiz")({
@@ -53,6 +53,12 @@ function Quiz() {
       <Toaster richColors position="top-center" />
       <Navbar />
       <main className="mx-auto max-w-4xl px-6 py-12">
+        <Link
+          to="/dashboard"
+          className="mb-6 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+        </Link>
         <div className="animate-fade-up">
           <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
             <Sparkles className="h-3.5 w-3.5" /> Quiz Generator
