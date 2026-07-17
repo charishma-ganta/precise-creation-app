@@ -77,17 +77,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "StudyMate AI – Personal AI Student Companion" },
+      {
+        name: "description",
+        content:
+          "Your AI-powered study companion. Explain concepts, generate quizzes, and build personalized study plans.",
+      },
+      { property: "og:title", content: "StudyMate AI" },
+      {
+        property: "og:description",
+        content: "Your AI-powered study companion for explanations, quizzes and study plans.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
-    ],
-    links: [
-      {
+
         rel: "stylesheet",
         href: appCss,
       },

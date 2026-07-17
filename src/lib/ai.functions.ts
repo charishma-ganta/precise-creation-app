@@ -1,0 +1,123 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+const MODEL = "google/gemini-2.5-flash";
+
+async function callGateway(system: string, user: string) {
+  const key = process.env.LOVABLE_API_KEY;
+  if (!key) throw new Error("Missing LOVABLE_API_KEY");
+  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Lovable-API-Key": key,
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: user },
+      ],
+    }),
+  });
+  if (!res.ok) {
+    if (res.status === 429) throw new Error("Rate limit reached. Please try again in a moment.");
+    if (res.status === 402) throw new Error("AI credits exhausted. Please add credits to continue.");
+    throw new Error(`AI request failed (${res.status})`);
+  }
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content ?? "";
+}
+
+export const explainTopic = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ topic: z.string().min(1).max(200) }).parse(d))
+  .handler(async ({ data }) => {
+    const content = await callGateway(
+      "You are StudyMate AI, a friendly tutor. Always respond in clean Markdown with the exact section headings requested.",
+      `Explain the topic "${data.topic}" for a beginner. Use these exact markdown sections:
+
+## Simple Explanation
+A clear, beginner-friendly explanation in plain language.
+
+## Key Concepts
+- Bullet list of the main concepts.
+
+## Real-World Example
+A relatable example.
+
+## Common Mistakes
+- Bullet list of common pitfalls.
+
+## Interview Tips
+- 3-5 interview questions or tips.
+
+## Summary
+A concise 2-3 sentence recap.`,
+    );
+    return { content };
+  });
+
+const QuizSchema = z.object({
+  questions: z.array(
+    z.object({
+      question: z.string(),
+      options: z.array(z.string()).length(4),
+      correctIndex: z.number().min(0).max(3),
+      explanation: z.string(),
+    }),
+  ),
+});
+
+export const generateQuiz = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ topic: z.string().min(1).max(200) }).parse(d))
+  .handler(async ({ data }) => {
+    const raw = await callGateway(
+      "You are StudyMate AI, a quiz generator. Always respond with pure JSON only, no markdown fences, no prose.",
+      `Generate 5 multiple choice questions about "${data.topic}". Respond as a JSON object of shape:
+{"questions":[{"question":"...","options":["a","b","c","d"],"correctIndex":0,"explanation":"..."}]}
+Exactly 5 questions, each with exactly 4 options.`,
+    );
+    const cleaned = raw.replace(/```json\s*|\s*```/g, "").trim();
+    const parsed = QuizSchema.parse(JSON.parse(cleaned));
+    return parsed;
+  });
+
+export const generatePlan = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        subject: z.string().min(1).max(200),
+        days: z.number().int().min(1).max(365),
+        hours: z.number().min(0.5).max(24),
+        goal: z.string().min(1).max(300),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    const content = await callGateway(
+      "You are StudyMate AI, an expert study planner. Respond in clean Markdown with the exact section headings requested.",
+      `Create a personalized study plan.
+Subject: ${data.subject}
+Days until exam: ${data.days}
+Hours available per day: ${data.hours}
+Goal: ${data.goal}
+
+Use these exact markdown sections:
+
+## Day-by-Day Schedule
+A table or ordered list, one line per day, with the topics to cover that day.
+
+## Revision Days
+Which days should be dedicated to revision, and what to revise.
+
+## Practice Day
+Which day is for practice / mock tests, and how to structure it.
+
+## Final Revision Checklist
+- Bullet checklist for the last day.
+
+## Motivation Tip
+A short encouraging note.`,
+    );
+    return { content };
+  });
