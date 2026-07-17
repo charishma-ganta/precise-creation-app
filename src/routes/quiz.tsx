@@ -36,6 +36,10 @@ function Quiz() {
     setPicks({});
     try {
       const res = await genQuiz({ data: { topic: topic.trim() } });
+      if (res.error) {
+        toast.error(res.error);
+        return;
+      }
       setQuiz(res);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong.");

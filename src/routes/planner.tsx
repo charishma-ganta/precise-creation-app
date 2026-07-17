@@ -36,6 +36,10 @@ function Planner() {
     setAnswer("");
     try {
       const res = await plan({ data: { subject: subject.trim(), days, hours, goal: goal.trim() } });
+      if (res.error) {
+        toast.error(res.error);
+        return;
+      }
       setAnswer(res.content);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong.");
