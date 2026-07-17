@@ -15,7 +15,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "StudyMate AI – Personal AI Student Companion" },
       {
         property: "og:description",
-        content: "Your AI-powered study companion for explanations, quizzes and study plans.",
+        content: "Learn smarter with AI. StudyMate AI explains concepts, generates quizzes, and builds personalized study plans in one beautiful workspace.",
       },
       { property: "og:type", content: "website" },
     ],

@@ -81,15 +81,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Your AI-powered study companion. Explain concepts, generate quizzes, and build personalized study plans.",
+          "Learn smarter with AI. StudyMate AI explains concepts, generates quizzes, and builds personalized study plans in one beautiful workspace.",
       },
-      { property: "og:title", content: "StudyMate AI" },
+      { property: "og:title", content: "StudyMate AI – Personal AI Student Companion" },
       {
         property: "og:description",
-        content: "Your AI-powered study companion for explanations, quizzes and study plans.",
+        content: "Learn smarter with AI. StudyMate AI explains concepts, generates quizzes, and builds personalized study plans in one beautiful workspace.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "StudyMate AI – Personal AI Student Companion" },
+      { name: "twitter:description", content: "Learn smarter with AI. StudyMate AI explains concepts, generates quizzes, and builds personalized study plans in one beautiful workspace." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d79ab5a0-45ae-4a80-af84-12777b06b3a7/id-preview-a4077dcc--168a3b37-17f8-4e26-aa62-be06a150b0fa.lovable.app-1784303247211.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d79ab5a0-45ae-4a80-af84-12777b06b3a7/id-preview-a4077dcc--168a3b37-17f8-4e26-aa62-be06a150b0fa.lovable.app-1784303247211.png" },
     ],
     links: [
       {
