@@ -1,32 +1,29 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-const MODEL = "google/gemini-2.5-flash";
+const MODEL = "gemini-2.0-flash";
 
 async function callGateway(system: string, user: string) {
-  const key = process.env.LOVABLE_API_KEY;
-  if (!key) throw new Error("Missing LOVABLE_API_KEY");
-  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Lovable-API-Key": key,
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) throw new Error("Missing GEMINI_API_KEY");
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: system }] },
+        contents: [{ role: "user", parts: [{ text: user }] }],
+      }),
     },
-    body: JSON.stringify({
-      model: MODEL,
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user },
-      ],
-    }),
-  });
+  );
   if (!res.ok) {
+    const body = await res.text();
     if (res.status === 429) throw new Error("Rate limit reached. Please try again in a moment.");
-    if (res.status === 402) throw new Error("AI credits exhausted. Please add credits to continue.");
-    throw new Error(`AI request failed (${res.status})`);
+    throw new Error(`Gemini request failed (${res.status}): ${body}`);
   }
   const data = await res.json();
-  return data.choices?.[0]?.message?.content ?? "";
+  return data.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("") ?? "";
 }
 
 export const explainTopic = createServerFn({ method: "POST" })
