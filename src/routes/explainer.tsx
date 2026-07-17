@@ -50,6 +50,12 @@ function Explainer() {
       <Toaster richColors position="top-center" />
       <Navbar />
       <main className="mx-auto max-w-4xl px-6 py-12">
+        <Link
+          to="/dashboard"
+          className="mb-6 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+        </Link>
         <div className="animate-fade-up">
           <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
             <Brain className="h-3.5 w-3.5" /> Topic Explainer
