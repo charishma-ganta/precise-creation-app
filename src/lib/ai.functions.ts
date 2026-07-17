@@ -1,69 +1,64 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-const MODEL = "google/gemini-2.5-flash";
+const MODEL = "gemini-2.5-flash";
 
 type GatewayResult =
   | { ok: true; content: string }
   | { ok: false; error: string };
 
-function formatOpenRouterError(status: number, body: string) {
-  if (status === 402) {
-    return "OpenRouter says this API key has no credits. Add credits at https://openrouter.ai/settings/credits or save an API key from the correct funded OpenRouter account.";
+function formatGeminiError(status: number, body: string) {
+  if (status === 429) {
+    return "Gemini is rate-limiting requests on the free tier. Please wait a minute and try again, or upgrade your Gemini API plan.";
   }
-
+  if (status === 403) {
+    return "Gemini rejected the API key (403). Check that GEMINI_API_KEY is valid and has access to the Generative Language API.";
+  }
   try {
     const parsed = JSON.parse(body) as { error?: { message?: string } };
-    if (parsed.error?.message) return `OpenRouter error: ${parsed.error.message}`;
+    if (parsed.error?.message) return `Gemini error: ${parsed.error.message}`;
   } catch {
-    // Fall through to generic message below.
+    // fall through
   }
-
-  return `OpenRouter request failed (${status}). Please try again later.`;
+  return `Gemini request failed (${status}). Please try again later.`;
 }
 
 async function callGateway(system: string, user: string) {
-  const key = process.env.OPENROUTER_API_KEY;
+  const key = process.env.GEMINI_API_KEY;
   if (!key) {
     return {
       ok: false,
-      error: "OPENROUTER_API_KEY is not configured. Save your OpenRouter API key in project secrets first.",
+      error: "GEMINI_API_KEY is not configured. Save your Gemini API key in project secrets first.",
     } satisfies GatewayResult;
   }
   const body = JSON.stringify({
-    model: MODEL,
-    messages: [
-      { role: "system", content: system },
-      { role: "user", content: user },
-    ],
+    systemInstruction: { parts: [{ text: system }] },
+    contents: [{ role: "user", parts: [{ text: user }] }],
   });
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`;
   const delays = [0, 1500, 4000, 8000];
   let lastErr = "";
+  let lastStatus = 0;
   for (const wait of delays) {
     if (wait) await new Promise((r) => setTimeout(r, wait));
-    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const res = await fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${key}`,
-      },
+      headers: { "Content-Type": "application/json" },
       body,
     });
     if (res.ok) {
       const data = await res.json();
-      return { ok: true, content: data.choices?.[0]?.message?.content ?? "" } satisfies GatewayResult;
+      const content =
+        data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("") ?? "";
+      return { ok: true, content } satisfies GatewayResult;
     }
+    lastStatus = res.status;
     lastErr = await res.text();
     if (res.status !== 429 && res.status < 500) {
-      return { ok: false, error: formatOpenRouterError(res.status, lastErr) } satisfies GatewayResult;
+      return { ok: false, error: formatGeminiError(res.status, lastErr) } satisfies GatewayResult;
     }
   }
-  return {
-    ok: false,
-    error: lastErr.includes("credits")
-      ? formatOpenRouterError(402, lastErr)
-      : "OpenRouter is rate-limiting requests. Please wait a moment and try again.",
-  } satisfies GatewayResult;
+  return { ok: false, error: formatGeminiError(lastStatus || 429, lastErr) } satisfies GatewayResult;
 }
 
 export const explainTopic = createServerFn({ method: "POST" })
