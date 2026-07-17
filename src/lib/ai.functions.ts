@@ -1,64 +1,68 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-const MODEL = "gemini-2.5-flash";
+const MODEL = "google/gemini-2.5-flash";
 
 type GatewayResult =
   | { ok: true; content: string }
   | { ok: false; error: string };
 
-function formatGeminiError(status: number, body: string) {
+function formatGatewayError(status: number, body: string) {
   if (status === 429) {
-    return "Gemini is rate-limiting requests on the free tier. Please wait a minute and try again, or upgrade your Gemini API plan.";
+    return "Lovable AI is rate-limiting requests. Please wait a moment and try again.";
   }
-  if (status === 403) {
-    return "Gemini rejected the API key (403). Check that GEMINI_API_KEY is valid and has access to the Generative Language API.";
+  if (status === 402) {
+    return "Your Lovable AI credits are exhausted. Add credits in your workspace billing settings to continue.";
   }
   try {
-    const parsed = JSON.parse(body) as { error?: { message?: string } };
-    if (parsed.error?.message) return `Gemini error: ${parsed.error.message}`;
+    const parsed = JSON.parse(body) as { error?: { message?: string } | string };
+    const msg = typeof parsed.error === "string" ? parsed.error : parsed.error?.message;
+    if (msg) return `Lovable AI error: ${msg}`;
   } catch {
     // fall through
   }
-  return `Gemini request failed (${status}). Please try again later.`;
+  return `Lovable AI request failed (${status}). Please try again later.`;
 }
 
 async function callGateway(system: string, user: string) {
-  const key = process.env.GEMINI_API_KEY;
+  const key = process.env.LOVABLE_API_KEY;
   if (!key) {
     return {
       ok: false,
-      error: "GEMINI_API_KEY is not configured. Save your Gemini API key in project secrets first.",
+      error: "LOVABLE_API_KEY is not configured. Enable Lovable Cloud to provision it.",
     } satisfies GatewayResult;
   }
   const body = JSON.stringify({
-    systemInstruction: { parts: [{ text: system }] },
-    contents: [{ role: "user", parts: [{ text: user }] }],
+    model: MODEL,
+    messages: [
+      { role: "system", content: system },
+      { role: "user", content: user },
+    ],
   });
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`;
   const delays = [0, 1500, 4000, 8000];
   let lastErr = "";
   let lastStatus = 0;
   for (const wait of delays) {
     if (wait) await new Promise((r) => setTimeout(r, wait));
-    const res = await fetch(url, {
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Lovable-API-Key": key,
+      },
       body,
     });
     if (res.ok) {
       const data = await res.json();
-      const content =
-        data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("") ?? "";
-      return { ok: true, content } satisfies GatewayResult;
+      return { ok: true, content: data.choices?.[0]?.message?.content ?? "" } satisfies GatewayResult;
     }
     lastStatus = res.status;
     lastErr = await res.text();
     if (res.status !== 429 && res.status < 500) {
-      return { ok: false, error: formatGeminiError(res.status, lastErr) } satisfies GatewayResult;
+      return { ok: false, error: formatGatewayError(res.status, lastErr) } satisfies GatewayResult;
     }
   }
-  return { ok: false, error: formatGeminiError(lastStatus || 429, lastErr) } satisfies GatewayResult;
+  return { ok: false, error: formatGatewayError(lastStatus || 429, lastErr) } satisfies GatewayResult;
 }
 
 export const explainTopic = createServerFn({ method: "POST" })
