@@ -3,9 +3,33 @@ import { z } from "zod";
 
 const MODEL = "google/gemini-2.5-flash";
 
+type GatewayResult =
+  | { ok: true; content: string }
+  | { ok: false; error: string };
+
+function formatOpenRouterError(status: number, body: string) {
+  if (status === 402) {
+    return "OpenRouter says this API key has no credits. Add credits at https://openrouter.ai/settings/credits or save an API key from the correct funded OpenRouter account.";
+  }
+
+  try {
+    const parsed = JSON.parse(body) as { error?: { message?: string } };
+    if (parsed.error?.message) return `OpenRouter error: ${parsed.error.message}`;
+  } catch {
+    // Fall through to generic message below.
+  }
+
+  return `OpenRouter request failed (${status}). Please try again later.`;
+}
+
 async function callGateway(system: string, user: string) {
   const key = process.env.OPENROUTER_API_KEY;
-  if (!key) throw new Error("Missing OPENROUTER_API_KEY");
+  if (!key) {
+    return {
+      ok: false,
+      error: "OPENROUTER_API_KEY is not configured. Save your OpenRouter API key in project secrets first.",
+    } satisfies GatewayResult;
+  }
   const body = JSON.stringify({
     model: MODEL,
     messages: [
@@ -27,20 +51,25 @@ async function callGateway(system: string, user: string) {
     });
     if (res.ok) {
       const data = await res.json();
-      return data.choices?.[0]?.message?.content ?? "";
+      return { ok: true, content: data.choices?.[0]?.message?.content ?? "" } satisfies GatewayResult;
     }
     lastErr = await res.text();
     if (res.status !== 429 && res.status < 500) {
-      throw new Error(`OpenRouter request failed (${res.status}): ${lastErr}`);
+      return { ok: false, error: formatOpenRouterError(res.status, lastErr) } satisfies GatewayResult;
     }
   }
-  throw new Error("OpenRouter is rate-limiting requests. Please wait a moment and try again, or check your OpenRouter credits.");
+  return {
+    ok: false,
+    error: lastErr.includes("credits")
+      ? formatOpenRouterError(402, lastErr)
+      : "OpenRouter is rate-limiting requests. Please wait a moment and try again.",
+  } satisfies GatewayResult;
 }
 
 export const explainTopic = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ topic: z.string().min(1).max(200) }).parse(d))
   .handler(async ({ data }) => {
-    const content = await callGateway(
+    const result = await callGateway(
       "You are StudyMate AI, a friendly tutor. Always respond in clean Markdown with the exact section headings requested.",
       `Explain the topic "${data.topic}" for a beginner. Use these exact markdown sections:
 
@@ -62,7 +91,8 @@ A relatable example.
 ## Summary
 A concise 2-3 sentence recap.`,
     );
-    return { content };
+    if (!result.ok) return { content: "", error: result.error };
+    return { content: result.content, error: "" };
   });
 
 const QuizSchema = z.object({
@@ -79,15 +109,17 @@ const QuizSchema = z.object({
 export const generateQuiz = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ topic: z.string().min(1).max(200) }).parse(d))
   .handler(async ({ data }) => {
-    const raw = await callGateway(
+    const result = await callGateway(
       "You are StudyMate AI, a quiz generator. Always respond with pure JSON only, no markdown fences, no prose.",
       `Generate 5 multiple choice questions about "${data.topic}". Respond as a JSON object of shape:
 {"questions":[{"question":"...","options":["a","b","c","d"],"correctIndex":0,"explanation":"..."}]}
 Exactly 5 questions, each with exactly 4 options.`,
     );
+    if (!result.ok) return { questions: [], error: result.error };
+    const raw = result.content;
     const cleaned = raw.replace(/```json\s*|\s*```/g, "").trim();
     const parsed = QuizSchema.parse(JSON.parse(cleaned));
-    return parsed;
+    return { ...parsed, error: "" };
   });
 
 export const generatePlan = createServerFn({ method: "POST" })
@@ -102,7 +134,7 @@ export const generatePlan = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ data }) => {
-    const content = await callGateway(
+    const result = await callGateway(
       "You are StudyMate AI, an expert study planner. Respond in clean Markdown with the exact section headings requested.",
       `Create a personalized study plan.
 Subject: ${data.subject}
@@ -127,5 +159,6 @@ Which day is for practice / mock tests, and how to structure it.
 ## Motivation Tip
 A short encouraging note.`,
     );
-    return { content };
+    if (!result.ok) return { content: "", error: result.error };
+    return { content: result.content, error: "" };
   });
