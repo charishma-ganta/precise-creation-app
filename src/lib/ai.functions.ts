@@ -1,33 +1,40 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-const MODEL = "gemini-2.5-flash";
+const MODEL = "google/gemini-2.5-flash";
 
 async function callGateway(system: string, user: string) {
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) throw new Error("Missing GEMINI_API_KEY");
+  const key = process.env.OPENROUTER_API_KEY;
+  if (!key) throw new Error("Missing OPENROUTER_API_KEY");
   const body = JSON.stringify({
-    systemInstruction: { parts: [{ text: system }] },
-    contents: [{ role: "user", parts: [{ text: user }] }],
+    model: MODEL,
+    messages: [
+      { role: "system", content: system },
+      { role: "user", content: user },
+    ],
   });
   const delays = [0, 1500, 4000, 8000];
   let lastErr = "";
   for (const wait of delays) {
     if (wait) await new Promise((r) => setTimeout(r, wait));
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`,
-      { method: "POST", headers: { "Content-Type": "application/json" }, body },
-    );
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${key}`,
+      },
+      body,
+    });
     if (res.ok) {
       const data = await res.json();
-      return data.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("") ?? "";
+      return data.choices?.[0]?.message?.content ?? "";
     }
     lastErr = await res.text();
     if (res.status !== 429 && res.status < 500) {
-      throw new Error(`Gemini request failed (${res.status}): ${lastErr}`);
+      throw new Error(`OpenRouter request failed (${res.status}): ${lastErr}`);
     }
   }
-  throw new Error("Gemini is rate-limiting requests on the free tier. Please wait a minute and try again, or upgrade your Gemini API plan.");
+  throw new Error("OpenRouter is rate-limiting requests. Please wait a moment and try again, or check your OpenRouter credits.");
 }
 
 export const explainTopic = createServerFn({ method: "POST" })
