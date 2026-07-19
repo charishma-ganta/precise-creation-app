@@ -71,19 +71,28 @@ function Quiz() {
 
         <form
           onSubmit={onSubmit}
-          className="mt-8 glass-card rounded-2xl p-4 flex flex-col gap-3 sm:flex-row"
+          className="mt-8 glass-card rounded-3xl p-6 grid gap-4"
         >
-          <input
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            placeholder="e.g. JavaScript, DBMS, World History"
-            className="flex-1 rounded-xl border border-border bg-background px-4 py-3 outline-none focus:ring-2 focus:ring-ring"
-            disabled={loading}
-          />
+          <div className="grid gap-2">
+            <label htmlFor="quiz-topic" className="text-sm font-medium text-foreground">
+              Quiz topic
+            </label>
+            <input
+              id="quiz-topic"
+              name="topic"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              placeholder="e.g. JavaScript, DBMS, World History"
+              aria-required="true"
+              className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-base outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
+              disabled={loading}
+            />
+            <p className="text-sm text-muted-foreground">Enter a topic for a quick multiple-choice quiz.</p>
+          </div>
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary hover:btn-primary-hover disabled:opacity-70"
+            className="btn-primary hover:btn-primary-hover disabled:opacity-70 disabled:pointer-events-none w-full justify-center rounded-2xl py-3 text-base font-semibold"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
             {loading ? "Generating..." : "Generate Quiz"}

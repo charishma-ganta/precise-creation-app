@@ -49,10 +49,10 @@ function Explainer() {
     <div className="min-h-screen bg-background">
       <Toaster richColors position="top-center" />
       <Navbar />
-      <main className="mx-auto max-w-4xl px-6 py-12">
+      <main className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
         <Link
           to="/dashboard"
-          className="mb-6 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          className="mb-6 inline-flex items-center gap-2 rounded-2xl border border-border bg-card px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
@@ -68,19 +68,28 @@ function Explainer() {
 
         <form
           onSubmit={onSubmit}
-          className="mt-8 glass-card rounded-2xl p-4 flex flex-col gap-3 sm:flex-row"
+          className="mt-8 glass-card rounded-3xl p-6 grid gap-4"
         >
-          <input
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            placeholder="e.g. React Hooks, Binary Search, Photosynthesis"
-            className="flex-1 rounded-xl border border-border bg-background px-4 py-3 outline-none focus:ring-2 focus:ring-ring"
-            disabled={loading}
-          />
+          <div className="grid gap-2">
+            <label htmlFor="topic" className="text-sm font-medium text-foreground">
+              Topic
+            </label>
+            <input
+              id="topic"
+              name="topic"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              placeholder="e.g. React Hooks, Binary Search, Photosynthesis"
+              aria-required="true"
+              className="rounded-2xl border border-border bg-background px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
+              disabled={loading}
+            />
+            <p className="text-sm text-muted-foreground">Enter the topic you want explained in plain language.</p>
+          </div>
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary hover:btn-primary-hover disabled:opacity-70"
+            className="btn-primary hover:btn-primary-hover disabled:opacity-70 disabled:pointer-events-none w-full justify-center py-3 text-base"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
             {loading ? "Explaining..." : "Explain"}
