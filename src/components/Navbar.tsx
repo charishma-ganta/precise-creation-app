@@ -13,7 +13,7 @@ const links = [
 export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/95 backdrop-blur-xl">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+      <nav className="mx-auto flex max-w-7xl min-w-0 items-center justify-between gap-4 px-4 py-4 sm:px-6">
         <Link
           to="/"
           className="flex items-center gap-3 rounded-2xl px-3 py-2 transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2"
@@ -27,7 +27,7 @@ export function Navbar() {
           </div>
         </Link>
 
-        <div className="hidden flex-1 items-center justify-center gap-2 md:flex">
+        <div className="hidden flex-1 min-w-0 flex-wrap items-center justify-center gap-2 md:flex">
           {links.map((link) => (
             <Link
               key={link.to}

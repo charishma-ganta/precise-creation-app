@@ -37,8 +37,8 @@ function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,320px)]">
           <div className="animate-fade-up">
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary/80">
               StudyMate AI Dashboard
@@ -96,7 +96,7 @@ function Dashboard() {
         </div>
 
         <section className="mt-12">
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
             {tools.map((t, i) => (
               <Link
                 key={t.to}
