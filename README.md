@@ -27,7 +27,7 @@ Your personal AI-powered study companion. StudyMate AI explains complex topics, 
 ### Prerequisites
 
 - [Bun](https://bun.sh/) (recommended) or Node.js 20+
-- A Lovable Cloud project with an auto-provisioned `LOVABLE_API_KEY`
+- A Google Gemini API key (`GEMINI_API_KEY`) — get one at https://aistudio.google.com/apikey
 
 ### Install dependencies
 
