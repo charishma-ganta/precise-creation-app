@@ -45,35 +45,59 @@ function Landing() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_oklch(0.9_0.08_275/0.4),_transparent_60%)]" />
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 md:grid-cols-2 md:py-28">
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-16 md:grid-cols-2 md:py-24">
           <div className="animate-fade-up">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-primary" /> Powered by AI
             </div>
-            <h1 className="font-display text-5xl font-bold leading-[1.05] md:text-6xl">
+            <h1 className="hero-title">
               Learn Smarter <br />
               with <span className="gradient-text">AI</span>
             </h1>
-            <p className="mt-6 max-w-lg text-lg text-muted-foreground">
-              Your personal AI-powered study companion that explains concepts, creates quizzes, and
-              builds personalized study plans — all in one beautiful workspace.
+            <p className="hero-subtitle">
+              Personal AI that explains concepts, creates quizzes, and builds study plans—fast and friendly.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/dashboard" className="btn-primary hover:btn-primary-hover">
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link
+                to="/dashboard"
+                className="btn-primary hover:btn-primary-hover px-6 py-3 text-base shadow-lg focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/25 w-full sm:w-auto justify-center"
+                aria-label="Get started with StudyMate AI"
+                title="Get started"
+              >
                 Get Started <ArrowRight className="h-4 w-4" />
               </Link>
-              <a href="#features" className="btn-ghost hover:bg-secondary">
+              <a href="#features" className="text-sm text-muted-foreground hover:text-foreground underline-offset-2">
                 Learn More
               </a>
             </div>
+
+            {/* Micro commitment to increase click-through */}
+            <div className="mt-3 text-sm text-muted-foreground">No credit card • 1-minute setup</div>
+
+            {/* Trust / social proof row (minimal) */}
+            <div className="mt-6 flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
+              <div className="inline-flex items-center gap-2">
+                <User className="h-4 w-4 text-primary" />
+                <span>Trusted by 20k+ students</span>
+              </div>
+              <div className="inline-flex items-center gap-2">
+                <Clock className="h-4 w-4 text-primary" />
+                <span>Quick setup</span>
+              </div>
+              <div className="inline-flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-primary" />
+                <span>AI-powered guidance</span>
+              </div>
+            </div>
           </div>
-          <div className="animate-fade-up [animation-delay:150ms]">
+          <div className="animate-fade-up [animation-delay:80ms]">
             <div className="relative">
               <div className="absolute -inset-6 -z-10 rounded-3xl bg-gradient-to-br from-primary/20 to-accent/20 blur-3xl" />
+              <div className="absolute inset-0 z-0 rounded-3xl bg-gradient-to-tr from-transparent to-black/5 pointer-events-none" />
               <img
                 src={heroImg}
                 alt="Student learning with AI assistant"
-                className="w-full max-w-lg"
+                className="w-full max-w-lg relative z-10"
               />
             </div>
           </div>
@@ -81,22 +105,22 @@ function Landing() {
       </section>
 
       {/* Features */}
-      <section id="features" className="mx-auto max-w-7xl px-6 py-20">
+      <section id="features" className="mx-auto max-w-7xl px-6 py-16">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-4xl font-bold">Everything you need to study</h2>
           <p className="mt-3 text-muted-foreground">
             Four powerful tools built for the way students actually learn.
           </p>
         </div>
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((f, i) => (
             <div
               key={f.title}
-              className="glass-card rounded-2xl p-6 transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-soft)] animate-fade-up"
-              style={{ animationDelay: `${i * 80}ms` }}
+              className="glass-card rounded-2xl p-7 transition-transform hover:-translate-y-2 hover:shadow-[0_18px_50px_-20px_var(--color-primary)] animate-fade-up"
+              style={{ animationDelay: `${i * 60}ms` }}
             >
-              <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent text-primary-foreground">
-                <f.icon className="h-5 w-5" />
+              <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-[0_6px_24px_-8px_var(--color-primary)]">
+                <f.icon className="h-6 w-6" />
               </div>
               <h3 className="mb-1 text-lg font-semibold">{f.title}</h3>
               <p className="text-sm text-muted-foreground">{f.desc}</p>
@@ -124,7 +148,7 @@ function Landing() {
       </section>
 
       {/* CTA */}
-      <section className="mx-auto max-w-5xl px-6 py-20">
+      <section className="mx-auto max-w-5xl px-6 py-16">
         <div className="relative overflow-hidden rounded-3xl p-12 text-center text-primary-foreground [background:var(--gradient-hero)] shadow-[var(--shadow-soft)]">
           <h2 className="font-display text-4xl font-bold text-white">Ready to Study Smarter?</h2>
           <p className="mx-auto mt-3 max-w-xl text-white/85">
