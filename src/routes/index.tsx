@@ -163,14 +163,26 @@ function Landing() {
         </div>
       </section>
 
-      <footer className="border-t border-border">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-8 text-sm text-muted-foreground">
-          <div>© {new Date().getFullYear()} StudyMate AI</div>
-          <div className="flex gap-6">
-            <Link to="/" className="hover:text-foreground">Home</Link>
-            <a href="#features" className="hover:text-foreground">Features</a>
-            <a href="mailto:hello@studymate.ai" className="hover:text-foreground">Contact</a>
-            <span>Privacy Policy</span>
+      <footer className="border-t border-border bg-card/80">
+        <div className="mx-auto grid max-w-7xl gap-6 px-6 py-10 text-sm text-muted-foreground md:grid-cols-[1.5fr_auto] md:items-center">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary/90">StudyMate AI</p>
+            <p className="mt-3 max-w-md text-sm leading-7 text-muted-foreground/90">
+              A smarter, more focused way to study. Use AI tools to learn clearly, practice confidently, and plan effectively.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-start gap-4 md:justify-end">
+            <Link to="/" className="text-sm font-medium text-muted-foreground transition hover:text-foreground">
+              Home
+            </Link>
+            <a href="#features" className="text-sm font-medium text-muted-foreground transition hover:text-foreground">
+              Features
+            </a>
+            <a href="mailto:hello@studymate.ai" className="text-sm font-medium text-muted-foreground transition hover:text-foreground">
+              Contact
+            </a>
+            <span className="text-sm font-medium text-muted-foreground">Privacy Policy</span>
           </div>
         </div>
       </footer>
