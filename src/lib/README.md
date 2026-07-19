@@ -18,7 +18,7 @@ All functions call the Lovable AI Gateway (`google/gemini-2.5-flash`) with struc
 
 ### Error Handling
 
-- Missing `LOVABLE_API_KEY` is reported as a clear configuration error.
+- Missing `GEMINI_API_KEY` is reported as a clear configuration error.
 - 429 / 5xx responses trigger exponential backoff retries.
 - 402 (insufficient credits) and final failures return user-friendly error messages.
 
