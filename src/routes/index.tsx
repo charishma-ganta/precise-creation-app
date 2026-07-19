@@ -66,7 +66,7 @@ function Landing() {
               >
                 Get Started <ArrowRight className="h-4 w-4" />
               </Link>
-              <a href="#features" className="text-sm text-muted-foreground hover:text-foreground underline-offset-2">
+              <a href="#features" className="text-sm text-muted-foreground underline decoration-primary/50 underline-offset-2 transition hover:text-foreground hover:decoration-primary">
                 Learn More
               </a>
             </div>

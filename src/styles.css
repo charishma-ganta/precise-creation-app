@@ -85,6 +85,17 @@
 }
 
 @layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  button, input, textarea, select {
+    font: inherit;
+    line-height: inherit;
+  }
+  a {
+    color: inherit;
+    text-decoration-skip-ink: auto;
+  }
   * {
     border-color: var(--color-border);
   }
@@ -92,6 +103,7 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
   h1, h2, h3, h4 {
@@ -223,6 +235,10 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.btn-ghost:hover {
+  background-color: var(--secondary);
 }
 
 @keyframes fadeInUp {
