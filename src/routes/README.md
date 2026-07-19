@@ -19,3 +19,15 @@ is `src/routes/__root.tsx`.
 | `__root.tsx` | app shell — wraps every page; preserve `<Outlet />` |
 
 `routeTree.gen.ts` is auto-generated. Don't edit it by hand.
+
+## App Routes
+
+| File | URL | Description |
+|------|-----|-------------|
+| `index.tsx` | `/` | Landing page with hero, features, and CTA |
+| `dashboard.tsx` | `/dashboard` | Tool selection dashboard |
+| `explainer.tsx` | `/explainer` | AI Topic Explainer |
+| `quiz.tsx` | `/quiz` | AI Quiz Generator |
+| `planner.tsx` | `/planner` | AI Study Planner |
+| `__root.tsx` | N/A | Root layout wrapping every page |
+
