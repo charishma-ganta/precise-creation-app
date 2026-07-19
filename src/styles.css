@@ -115,10 +115,69 @@
   }
 
   /* Improve focus visibility for actionable controls */
-  .btn-primary:focus-visible, .btn-ghost:focus-visible {
+  .btn-primary:focus-visible, .btn-ghost:focus-visible,
+  .nav-link:focus-visible,
+  .nav-link-mobile:focus-visible,
+  .navbar-toggle:focus-visible {
     outline: none;
     box-shadow: 0 8px 30px -12px color-mix(in oklch, var(--color-primary) 60%, transparent), 0 0 0 4px color-mix(in oklch, var(--color-primary) 20%, transparent);
     border-radius: var(--radius);
+  }
+
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-muted-foreground);
+    border-radius: 9999px;
+    padding: 0.65rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+
+  .nav-link:hover {
+    background-color: var(--secondary);
+    color: var(--color-foreground);
+    transform: translateY(-1px);
+  }
+
+  .nav-link-active {
+    background-color: color-mix(in oklch, var(--primary) 15%, var(--secondary));
+    color: var(--primary);
+  }
+
+  .nav-link-mobile {
+    display: block;
+    width: 100%;
+    border-radius: 1.5rem;
+    padding: 0.95rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-foreground);
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .nav-link-mobile:hover {
+    background-color: var(--secondary);
+    color: var(--color-foreground);
+  }
+
+  .navbar-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 1rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-card);
+    color: var(--color-foreground);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .navbar-toggle:hover {
+    background-color: var(--secondary);
+    transform: translateY(-1px);
   }
 }
 
