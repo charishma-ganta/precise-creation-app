@@ -48,11 +48,11 @@ The app will be available at `http://localhost:8080` by default.
 Create a `.env` file in the project root if needed:
 
 ```env
-# Auto-provisioned by Lovable Cloud — no manual setup required in most cases.
-LOVABLE_API_KEY=your_lovable_api_key
+# Required: Google Gemini API key (server-side only, never exposed to the browser)
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
-The server functions read `process.env.LOVABLE_API_KEY` at runtime. The key is never exposed to the browser.
+On Vercel, add `GEMINI_API_KEY` under Project Settings → Environment Variables. The server functions read `process.env.GEMINI_API_KEY` at runtime.
 
 ## Project Structure
 
