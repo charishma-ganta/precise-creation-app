@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-const MODEL = "gemini-2.5-flash";
+const MODEL = "gemini-flash-latest";
 
 type GatewayResult =
   | { ok: true; content: string }
